@@ -53,6 +53,7 @@ public final class DnsNameResolverBuilder {
     private HostsFileEntriesResolver hostsFileEntriesResolver = HostsFileEntriesResolver.DEFAULT;
     private String[] searchDomains = DnsNameResolver.DEFAULT_SEACH_DOMAINS;
     private int ndots = 1;
+    private boolean decodeToUnicode = true;
 
     /**
      * Creates a new builder.
@@ -331,6 +332,18 @@ public final class DnsNameResolverBuilder {
     }
 
     /**
+     * Set if domain / host names should be decoded to unicode when received.
+     * See <a href="https://tools.ietf.org/html/rfc3492">rfc3492</a>.
+     *
+     * @param decodeToUnicode if should get decoded
+     * @return {@code this}
+     */
+    public DnsNameResolverBuilder decodeToUnicode(boolean decodeToUnicode) {
+        this.decodeToUnicode = decodeToUnicode;
+        return this;
+    }
+
+    /**
      * Returns a new {@link DnsNameResolver} instance.
      *
      * @return a {@link DnsNameResolver}
@@ -358,6 +371,7 @@ public final class DnsNameResolverBuilder {
                 optResourceEnabled,
                 hostsFileEntriesResolver,
                 searchDomains,
-                ndots);
+                ndots,
+                decodeToUnicode);
     }
 }
