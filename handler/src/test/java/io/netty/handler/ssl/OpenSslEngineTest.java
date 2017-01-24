@@ -259,6 +259,12 @@ public class OpenSslEngineTest extends SSLEngineTest {
                 ReferenceCountedOpenSslEngine.calculateOutNetBufSize(Integer.MAX_VALUE));
     }
 
+    @Test
+    public void testCalculateOutNetBufSize0() {
+        assertEquals(ReferenceCountedOpenSslEngine.MAX_ENCRYPTION_OVERHEAD_LENGTH,
+                ReferenceCountedOpenSslEngine.calculateOutNetBufSize(0));
+    }
+
     @Override
     protected SslProvider sslClientProvider() {
         return SslProvider.OPENSSL;
