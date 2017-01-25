@@ -40,6 +40,7 @@ public final class DnsNameResolverBuilder {
     private ChannelFactory<? extends DatagramChannel> channelFactory;
     private DnsServerAddresses nameServerAddresses = DnsServerAddresses.defaultAddresses();
     private DnsCache resolveCache;
+    private DnsCache authoritativeDnsServerCache;
     private Integer minTtl;
     private Integer maxTtl;
     private Integer negativeTtl;
@@ -105,6 +106,17 @@ public final class DnsNameResolverBuilder {
      */
     public DnsNameResolverBuilder resolveCache(DnsCache resolveCache) {
         this.resolveCache  = resolveCache;
+        return this;
+    }
+
+    /**
+     * Sets the cache for authoritive NS servers
+     *
+     * @param authoritativeDnsServerCache the authoritive NS servers cache
+     * @return {@code this}
+     */
+    public DnsNameResolverBuilder authoritativeDnsServerCache(DnsCache authoritativeDnsServerCache) {
+        this.authoritativeDnsServerCache  = authoritativeDnsServerCache;
         return this;
     }
 
@@ -330,25 +342,33 @@ public final class DnsNameResolverBuilder {
         return this;
     }
 
+    private DnsCache newCache() {
+        return new DefaultDnsCache(intValue(minTtl, 0), intValue(maxTtl, Integer.MAX_VALUE), intValue(negativeTtl, 0));
+    }
+
     /**
      * Returns a new {@link DnsNameResolver} instance.
      *
      * @return a {@link DnsNameResolver}
      */
     public DnsNameResolver build() {
-
         if (resolveCache != null && (minTtl != null || maxTtl != null || negativeTtl != null)) {
             throw new IllegalStateException("resolveCache and TTLs are mutually exclusive");
         }
 
-        DnsCache cache = resolveCache != null ? resolveCache :
-                new DefaultDnsCache(intValue(minTtl, 0), intValue(maxTtl, Integer.MAX_VALUE), intValue(negativeTtl, 0));
+        if (authoritativeDnsServerCache != null && (minTtl != null || maxTtl != null || negativeTtl != null)) {
+            throw new IllegalStateException("authoritativeDnsServerCache and TTLs are mutually exclusive");
+        }
 
+        DnsCache resolveCache = this.resolveCache != null ? this.resolveCache : newCache();
+        DnsCache authoritativeDnsServerCache = this.authoritativeDnsServerCache != null ?
+                this.authoritativeDnsServerCache : newCache();
         return new DnsNameResolver(
                 eventLoop,
                 channelFactory,
                 nameServerAddresses,
-                cache,
+                resolveCache,
+                authoritativeDnsServerCache,
                 queryTimeoutMillis,
                 resolvedAddressTypes,
                 recursionDesired,
