@@ -2108,10 +2108,10 @@ public abstract class AbstractByteBufTest {
 
     @Test
     public void testInternalNioBuffer() {
-//        testInternalNioBuffer(128);
-//        testInternalNioBuffer(1024);
-//        testInternalNioBuffer(4 * 1024);
-//        testInternalNioBuffer(64 * 1024);
+        testInternalNioBuffer(128);
+        testInternalNioBuffer(1024);
+        testInternalNioBuffer(4 * 1024);
+        testInternalNioBuffer(64 * 1024);
         testInternalNioBuffer(32 * 1024 * 1024);
         testInternalNioBuffer(64 * 1024 * 1024);
     }
